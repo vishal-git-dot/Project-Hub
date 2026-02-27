@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="light-theme">
+    <div class="grain"></div>
+    <div class="vibrant-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <div class="wrapper">
+        <header class="main-header">
+            <div class="logo">Vishal-<span>git-dot</span></div>
+            <button id="theme-toggle" class="theme-btn" title="Toggle Light/Dark">
+                <span class="sun-icon">☀️</span>
+                <span class="moon-icon">🌙</span>
+            </button>
+        </header>
+
+        <section class="hero-section">
+            <h1 class="hero-title">Project <br>Hub.</h1>
+            
+            <div class="controls-area">
+                <div class="search-box">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="search-input" placeholder="Search archive...">
+                </div>
+
+                <div class="filter-pills">
+                    <button class="pill active" data-filter="all">All</button>
+                    <button class="pill" data-filter="Web">Web</button>
+                    <button class="pill" data-filter="Apps">Apps</button>
+                </div>
+            </div>
+        </section>
+
+        <main id="project-grid" class="grid"></main>
+    </div>
+
+    <div id="detail-overlay" class="detail-page">
+        <div class="detail-nav">
+            <button class="close-detail" onclick="closeDetail()">← Back to Grid</button>
+        </div>
+        <div class="detail-content">
+            <div class="detail-visual">
+                <div class="detail-img-container">
+                    <img id="detail-img" src="" alt="Project Preview">
+                </div>
+            </div>
+            <div class="detail-text">
+                <span id="detail-tag" class="badge">Category</span>
+                <h2 id="detail-title">Project Title</h2>
+                <p id="detail-desc">Description text.</p>
+                <a id="detail-link" href="#" target="_blank" class="btn-main">Visit Live Site</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-dock">
+        <button id="open-modal" class="btn-main">+ Add Project</button>
+    </div>
+
+    <div id="modal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>Project Config</h3>
+            <form id="project-form">
+                <input type="hidden" id="edit-id">
+                <div class="form-item"><label>Project Name</label><input type="text" id="proj-title" required></div>
+                <div class="form-item"><label>Image (assets/file.png)</label><input type="text" id="proj-img"></div>
+                <div class="form-item"><label>Target URL</label><input type="url" id="proj-link" required></div>
+                <div class="form-item"><label>Description</label><textarea id="proj-desc" rows="3"></textarea></div>
+                <div class="form-item">
+                    <label>Category</label>
+                    <select id="proj-category">
+                        <option value="Web">Web</option>
+                        <option value="Apps">Apps</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="close-modal" class="btn-ghost">Cancel</button>
+                    <button type="submit" class="btn-main">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
