@@ -3,85 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Hub</title>
+    <meta name="theme-color" content="#f7f7f5">
+    <meta name="description" content="A modern project archive showcasing web and app projects.">
+    <meta name="color-scheme" content="light dark">
+    <title>Project Hub — Portfolio Archive</title>
+
+    <!-- Custom inline favicon: works on GitHub Pages without extra files. -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%236366f1'/%3E%3Cpath d='M20 20h24v8H28v8h12v8H28v8h-8V20Z' fill='white'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='46' fill='%236366f1'/%3E%3Cpath d='M56 52h68v23H79v16h34v23H79v14H56V52Z' fill='white'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="light-theme">
-    <div class="grain"></div>
-    <div class="vibrant-bg">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
+    <div id="loading-screen" class="loading-screen" aria-live="polite">
+        <div class="loader-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p>Loading projects</p>
     </div>
 
-    <div class="wrapper">
-        <header class="main-header">
-            <div class="logo">Vishal-<span>git-dot</span></div>
-            <button id="theme-toggle" class="theme-btn" title="Toggle Light/Dark">
-                <span class="sun-icon">☀️</span>
-                <span class="moon-icon">🌙</span>
-            </button>
+    <div class="ambient" aria-hidden="true">
+        <div class="ambient-orb ambient-orb--one"></div>
+        <div class="ambient-orb ambient-orb--two"></div>
+        <div class="ambient-grid"></div>
+    </div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <div class="site-shell">
+        <header class="main-header" id="top">
+            <a class="brand" href="#top" aria-label="Project Hub home">
+                <span class="brand-mark" aria-hidden="true">P</span>
+                <span class="brand-text">Project<span>Hub</span></span>
+            </a>
+
+            <nav class="desktop-nav" aria-label="Primary navigation">
+                <a href="#projects">Projects</a>
+                <a href="#faq">FAQ</a>
+                <a href="#about">About</a>
+            </nav>
+
+            <div class="header-actions">
+                <button id="theme-toggle" class="icon-btn theme-btn" type="button" title="Toggle theme" aria-label="Toggle light and dark theme" aria-pressed="false">
+                    <span class="sun-icon" aria-hidden="true">☀</span>
+                    <span class="moon-icon" aria-hidden="true">☾</span>
+                </button>
+                <button id="mobile-menu-toggle" class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
         </header>
 
-        <section class="hero-section">
-            <h1 class="hero-title">Project <br>Hub.</h1>
-            
-            <div class="controls-area">
-                <div class="search-box">
-                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" id="search-input" placeholder="Search archive...">
+        <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+            <a href="#projects">Projects</a>
+            <a href="#faq">FAQ</a>
+            <a href="#about">About</a>
+        </div>
+
+        <main>
+            <section class="hero-section" aria-labelledby="hero-title">
+                <div class="hero-copy">
+                    <p class="eyebrow"><span class="status-dot"></span> PROJECT ARCHIVE <span class="hero-year">2026</span></p>
+                    <h1 id="hero-title" class="hero-title">Ideas,<br><em>built.</em></h1>
+                    <p class="hero-subtitle">A curated space for experiments, applications and websites. Explore the work, open a project, or filter the archive.</p>
                 </div>
 
-                <div class="filter-pills">
-                    <button class="pill active" data-filter="all">All</button>
-                    <button class="pill" data-filter="Web">Web</button>
-                    <button class="pill" data-filter="Apps">Apps</button>
+                <div class="hero-meta" aria-label="Archive summary">
+                    <div class="meta-card">
+                        <span class="meta-number" id="project-count">0</span>
+                        <span>Projects</span>
+                    </div>
+                    <div class="meta-card">
+                        <span class="meta-number" id="category-count">0</span>
+                        <span>Categories</span>
+                    </div>
+                    <div class="meta-card">
+                        <span class="meta-number">100%</span>
+                        <span>Local-first</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="projects" class="archive-section" aria-labelledby="projects-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">01 / ARCHIVE</p>
+                        <h2 id="projects-title">Selected projects</h2>
+                    </div>
+                    <p class="section-note">Search by project name and switch categories without leaving the page.</p>
+                </div>
+
+                <div class="controls-area">
+                    <label class="search-box" for="search-input">
+                        <svg class="search-icon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="11" cy="11" r="7.5"></circle>
+                            <path d="m20 20-3.7-3.7"></path>
+                        </svg>
+                        <input type="search" id="search-input" placeholder="Search projects..." autocomplete="off">
+                        <kbd>/</kbd>
+                    </label>
+
+                    <div class="filter-pills" role="group" aria-label="Filter projects">
+                        <button class="pill active" type="button" data-filter="all">All <span class="pill-count" data-count="all">0</span></button>
+                        <button class="pill" type="button" data-filter="Web">Web <span class="pill-count" data-count="Web">0</span></button>
+                        <button class="pill" type="button" data-filter="Apps">Apps <span class="pill-count" data-count="Apps">0</span></button>
+                    </div>
+                </div>
+
+                <div id="results-status" class="results-status" aria-live="polite"></div>
+                <div id="project-grid" class="grid" aria-live="polite"></div>
+
+                <div id="empty-state" class="empty-state" hidden>
+                    <div class="empty-icon" aria-hidden="true">⌕</div>
+                    <h3>No projects found</h3>
+                    <p>Try another search term or switch the category filter.</p>
+                    <button id="clear-search" class="btn-ghost" type="button">Clear filters</button>
+                </div>
+
+                <div id="error-state" class="error-state" hidden>
+                    <div class="empty-icon" aria-hidden="true">!</div>
+                    <h3>Something went wrong</h3>
+                    <p id="error-message">The project archive could not be loaded.</p>
+                    <button id="retry-render" class="btn-ghost" type="button">Try again</button>
+                </div>
+            </section>
+
+            <section id="faq" class="faq-section" aria-labelledby="faq-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">02 / FAQ</p>
+                        <h2 id="faq-title">Questions, answered.</h2>
+                    </div>
+                    <p class="section-note">A few useful notes about this project archive.</p>
+                </div>
+
+                <div class="faq-list">
+                    <details class="faq-item">
+                        <summary>Where are my projects stored?</summary>
+                        <p>Projects are stored in your browser's localStorage using the existing <code>lattice_v8_final</code> data key. The redesign keeps that storage behavior intact, so your existing saved projects remain available.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Will this work on GitHub Pages?</summary>
+                        <p>Yes. The site is static HTML, CSS and JavaScript and does not require a server, database or build step. Upload the three files to your repository and enable GitHub Pages.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Can I still add, edit and delete projects?</summary>
+                        <p>Yes. The existing project configuration flow is preserved. Add a project from the floating action button, or use Edit and Delete on an existing card.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Does the theme preference persist?</summary>
+                        <p>Yes. Light and dark mode continue to use the existing <code>theme_pref</code> localStorage preference, with improved system-aware styling and transitions.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>What happens if an image fails?</summary>
+                        <p>A built-in SVG placeholder is used instead of an external placeholder service, and an error notification explains what happened without breaking the rest of the archive.</p>
+                    </details>
+                </div>
+            </section>
+        </main>
+
+        <footer id="about" class="site-footer">
+            <div class="footer-top">
+                <div>
+                    <a class="brand footer-brand" href="#top">
+                        <span class="brand-mark" aria-hidden="true">P</span>
+                        <span class="brand-text">Project<span>Hub</span></span>
+                    </a>
+                    <p class="footer-copy">A lightweight, local-first project archive designed for static hosting.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#projects">Archive</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="#top">Back to top ↑</a>
                 </div>
             </div>
-        </section>
-
-        <main id="project-grid" class="grid"></main>
+            <div class="footer-bottom">
+                <span>© <span id="current-year">2026</span> Project Hub</span>
+                <span>Last updated: <time id="last-updated">06 Oct 2026</time></span>
+            </div>
+        </footer>
     </div>
 
-    <div id="detail-overlay" class="detail-page">
+    <div id="detail-overlay" class="detail-page" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="detail-title">
         <div class="detail-nav">
-            <button class="close-detail" onclick="closeDetail()">← Back to Grid</button>
+            <button class="close-detail btn-ghost" type="button" onclick="closeDetail()">← <span>Back to archive</span></button>
+            <span class="detail-kicker">PROJECT VIEW</span>
         </div>
         <div class="detail-content">
             <div class="detail-visual">
                 <div class="detail-img-container">
-                    <img id="detail-img" src="" alt="Project Preview">
+                    <img id="detail-img" src="" alt="Project preview" decoding="async">
                 </div>
             </div>
             <div class="detail-text">
                 <span id="detail-tag" class="badge">Category</span>
                 <h2 id="detail-title">Project Title</h2>
                 <p id="detail-desc">Description text.</p>
-                <a id="detail-link" href="#" target="_blank" class="btn-main">Visit Live Site</a>
+                <a id="detail-link" href="#" target="_blank" rel="noopener noreferrer" class="btn-main detail-link">Visit Live Site ↗</a>
             </div>
         </div>
     </div>
 
-    <div class="action-dock">
-        <button id="open-modal" class="btn-main">+ Add Project</button>
-    </div>
-
-    <div id="modal" class="modal-overlay">
+    <div id="modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true">
         <div class="modal-box">
-            <h3>Project Config</h3>
+            <div class="modal-head">
+                <div>
+                    <p class="eyebrow">PROJECT CONFIG</p>
+                    <h3 id="modal-title">Add a project</h3>
+                </div>
+                <button id="modal-close-icon" class="icon-btn" type="button" aria-label="Close project form">×</button>
+            </div>
             <form id="project-form">
                 <input type="hidden" id="edit-id">
-                <div class="form-item"><label>Project Name</label><input type="text" id="proj-title" required></div>
-                <div class="form-item"><label>Image (assets/file.png)</label><input type="text" id="proj-img"></div>
-                <div class="form-item"><label>Target URL</label><input type="url" id="proj-link" required></div>
-                <div class="form-item"><label>Description</label><textarea id="proj-desc" rows="3"></textarea></div>
+                <div class="form-item"><label for="proj-title">Project Name</label><input type="text" id="proj-title" required maxlength="120" placeholder="My awesome project"></div>
+                <div class="form-item"><label for="proj-img">Image <span>(assets/file.png)</span></label><input type="text" id="proj-img" placeholder="assets/project.png"></div>
+                <div class="form-item"><label for="proj-link">Target URL</label><input type="url" id="proj-link" required placeholder="https://example.com"></div>
+                <div class="form-item"><label for="proj-desc">Description</label><textarea id="proj-desc" rows="4" maxlength="500" placeholder="What did you build?"></textarea></div>
                 <div class="form-item">
-                    <label>Category</label>
+                    <label for="proj-category">Category</label>
                     <select id="proj-category">
                         <option value="Web">Web</option>
                         <option value="Apps">Apps</option>
                     </select>
                 </div>
+                <div id="form-error" class="form-error" role="alert" hidden></div>
                 <div class="modal-footer">
                     <button type="button" id="close-modal" class="btn-ghost">Cancel</button>
                     <button type="submit" class="btn-main">Save Project</button>
@@ -89,6 +233,8 @@
             </form>
         </div>
     </div>
+
+    <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
 
     <script src="script.js"></script>
 </body>
