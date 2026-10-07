@@ -1,0 +1,13 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "title": "world-cup-watchlist",
+      "img": "assets/world-cup-watchlist.png",
+      "link": "https://world-cup-watchlist.netlify.app/",
+      "desc": "104 matches across 3 host nations. Tap to mark watched — your progress lives on your device, no account needed.",
+      "category": "Web"
+    }
+  ],
+  "lastUpdated": "2026-10-07T21:30:00+05:30"
+}
