@@ -5,6 +5,16 @@ const DB_NAME = 'lattice_v8_final';
 const THEME_KEY = 'theme_pref';
 const LAST_UPDATED_FALLBACK = '06 Oct 2026';
 
+// GitHub Pages + GitHub Actions sync configuration.
+// The site never stores a GitHub token in the browser. Saving a project
+// creates a pre-filled GitHub issue; the repository workflow validates the
+// issue author and appends the project to data.json.
+const GITHUB_OWNER = 'vishal-git-dot';
+const GITHUB_REPO = 'Project-Hub';
+const GITHUB_BRANCH = 'main';
+const DATA_URL = './data.json';
+const SYNC_MARKER = '<!-- project-hub-sync:v1 -->';
+
 let projects = [];
 let lastFocusedElement = null;
 
@@ -49,16 +59,50 @@ function safeStorageSet(key, value) {
     }
 }
 
-function loadProjects() {
+async function loadProjects() {
     try {
-        const raw = safeStorageGet(DB_NAME, '[]');
-        const parsed = JSON.parse(raw || '[]');
-        if (!Array.isArray(parsed)) throw new Error('Project data is not an array.');
-        projects = parsed.filter(p => p && typeof p === 'object');
+        // Legacy/browser data is kept as a fallback so every project already
+        // entered on this browser remains visible during the migration.
+        let localProjects = [];
+        try {
+            const raw = safeStorageGet(DB_NAME, '[]');
+            const parsed = JSON.parse(raw || '[]');
+            if (Array.isArray(parsed)) localProjects = parsed.filter(p => p && typeof p === 'object');
+        } catch (error) {
+            console.warn('Legacy local project data could not be read.', error);
+        }
+
+        let remoteProjects = [];
+        try {
+            const response = await fetch(`${DATA_URL}?v=${Date.now()}`, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`data.json returned ${response.status}`);
+            const payload = await response.json();
+            remoteProjects = Array.isArray(payload) ? payload : (Array.isArray(payload.projects) ? payload.projects : []);
+        } catch (error) {
+            // GitHub Pages may briefly serve the previous deployment. Local
+            // data remains available rather than blanking the archive.
+            if (localProjects.length) {
+                projects = localProjects;
+                showToast('Online project data is unavailable. Showing your saved browser data.', 'error');
+                return true;
+            }
+            throw error;
+        }
+
+        // Merge remote data with existing local data. Remote data wins for the
+        // same id; local-only records remain visible and can be synced later.
+        const byId = new Map();
+        localProjects.forEach(project => byId.set(String(project.id), project));
+        remoteProjects.forEach(project => byId.set(String(project.id), project));
+        projects = Array.from(byId.values());
+
+        // Keep the local cache in step with the published data.
+        safeStorageSet(DB_NAME, JSON.stringify(projects));
         return true;
     } catch (error) {
+        console.error(error);
         projects = [];
-        showFatalError('The saved project data could not be read. Your existing data was not overwritten.');
+        showFatalError('The project data could not be loaded. Check data.json or try again.');
         return false;
     }
 }
@@ -332,18 +376,56 @@ form.addEventListener('submit', (e) => {
         if (id) projects = projects.map(p => p.id === parseInt(id, 10) ? data : p);
         else projects.push(data);
 
+        // Save locally immediately so the new project appears without waiting
+        // for GitHub Pages to rebuild. GitHub Actions becomes the durable source.
         if (!safeStorageSet(DB_NAME, JSON.stringify(projects))) {
-            throw new Error('Storage write failed.');
+            throw new Error('Local cache write failed.');
         }
 
         closeModal();
         render();
-        showToast(id ? 'Project updated successfully.' : 'Project added successfully.', 'success');
+
+        const action = id ? 'updated' : 'added';
+        showToast(`Project ${action} locally. Opening GitHub sync…`, 'success');
+        openGitHubSyncIssue(data, id ? 'update' : 'add');
     } catch (error) {
         console.error(error);
         showFormError('The project could not be saved. Please try again.');
     }
 });
+
+function openGitHubSyncIssue(project, operation = 'add') {
+    const safeProject = {
+        id: Number(project.id),
+        title: String(project.title || '').slice(0, 120),
+        img: String(project.img || '').slice(0, 500),
+        link: String(project.link || '').slice(0, 1000),
+        desc: String(project.desc || '').slice(0, 500),
+        category: project.category === 'Apps' ? 'Apps' : 'Web'
+    };
+
+    const issueTitle = `Project Hub Sync: ${operation} — ${safeProject.title}`;
+    const issueBody = [
+        SYNC_MARKER,
+        '',
+        `Operation: ${operation}`,
+        '',
+        '```json',
+        JSON.stringify(safeProject, null, 2),
+        '```',
+        '',
+        `Branch: ${GITHUB_BRANCH}`,
+        '',
+        '_Generated by Project Hub._'
+    ].join('\n');
+
+    const url = new URL(`https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/issues/new`);
+    url.searchParams.set('title', issueTitle);
+    url.searchParams.set('body', issueBody);
+    url.searchParams.set('labels', 'project-sync');
+
+    window.open(url.toString(), '_blank', 'noopener,noreferrer');
+}
 
 window.deleteProj = (id) => {
     const project = projects.find(p => p.id === id);
@@ -353,7 +435,8 @@ window.deleteProj = (id) => {
         projects = projects.filter(p => p.id !== id);
         if (safeStorageSet(DB_NAME, JSON.stringify(projects))) {
             render();
-            showToast('Project removed from the archive.', 'success');
+            showToast('Project removed locally. Opening GitHub sync…', 'success');
+            openGitHubSyncIssue(project, 'delete');
         }
     }
 };
@@ -531,8 +614,8 @@ function initFooterMeta() {
     initTheme();
     initFooterMeta();
 
-    setTimeout(() => {
-        loadProjects();
+    setTimeout(async () => {
+        await loadProjects();
         render();
         loadingScreen.classList.add('loaded');
         setTimeout(() => loadingScreen.remove(), 500);
