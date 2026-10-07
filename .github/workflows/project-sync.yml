@@ -1,0 +1,118 @@
+name: Project Hub Sync
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  sync-project:
+    # Only the repository owner can use the website's sync issue mechanism.
+    if: >-
+      github.event.issue.user.login == github.repository_owner &&
+      contains(github.event.issue.body, '<!-- project-hub-sync:v1 -->')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Parse project payload
+        id: parse
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, re
+          body = os.environ.get('ISSUE_BODY', '')
+          match = re.search(r'```json\s*\n(.*?)\n```', body, re.S)
+          if not match:
+              raise SystemExit('No JSON project payload found.')
+          project = json.loads(match.group(1))
+          required = ['id', 'title', 'img', 'link', 'desc', 'category']
+          missing = [key for key in required if key not in project]
+          if missing:
+              raise SystemExit(f'Missing fields: {missing}')
+          op = re.search(r'^Operation:\s*(add|update|delete)\s*$', body, re.M)
+          operation = op.group(1) if op else 'add'
+          if operation != 'delete':
+              if project['category'] not in ('Web', 'Apps'):
+                  raise SystemExit('Invalid category.')
+              if not str(project['title']).strip():
+                  raise SystemExit('Project title is empty.')
+              if not str(project['link']).strip():
+                  raise SystemExit('Project link is empty.')
+          with open('/tmp/project.json', 'w', encoding='utf-8') as f:
+              json.dump(project, f, indent=2, ensure_ascii=False)
+          with open('/tmp/operation.txt', 'w', encoding='utf-8') as f:
+              f.write(operation)
+          PY
+
+      - name: Update data.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data_file = Path('data.json')
+          project_file = Path('/tmp/project.json')
+          operation = Path('/tmp/operation.txt').read_text(encoding='utf-8').strip()
+          project = json.loads(project_file.read_text(encoding='utf-8'))
+
+          if data_file.exists():
+              current = json.loads(data_file.read_text(encoding='utf-8'))
+          else:
+              current = {'projects': []}
+
+          if isinstance(current, list):
+              projects = current
+              current = {'projects': projects}
+          projects = current.get('projects', [])
+          if not isinstance(projects, list):
+              raise SystemExit('data.json projects must be an array.')
+
+          existing = next((i for i, p in enumerate(projects) if str(p.get('id')) == str(project['id'])), None)
+
+          if operation == 'delete':
+              projects = [p for p in projects if str(p.get('id')) != str(project['id'])]
+          elif operation == 'update' and existing is not None:
+              projects[existing] = project
+          elif existing is None:
+              projects.append(project)
+          else:
+              projects[existing] = project
+
+          current['projects'] = projects
+          current['lastUpdated'] = __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat()
+          data_file.write_text(json.dumps(current, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          PY
+
+      - name: Commit data.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          if git diff --cached --quiet; then
+            echo "No data changes to commit."
+          else
+            git commit -m "chore: sync project from Project Hub"
+            git push
+          fi
+
+      - name: Close sync issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue close "$ISSUE_NUMBER" --comment "Project synced to \\`data.json\\` by GitHub Actions." --repo "${GITHUB_REPOSITORY}"
