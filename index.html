@@ -139,15 +139,15 @@
                 <div class="faq-list">
                     <details class="faq-item">
                         <summary>Where are my projects stored?</summary>
-                        <p>Projects are stored in your browser's localStorage using the existing <code>lattice_v8_final</code> data key. The redesign keeps that storage behavior intact, so your existing saved projects remain available.</p>
+                        <p>Published projects are loaded from <code>data.json</code>. Your existing browser projects are also kept as a migration fallback, so anything you already entered on this browser continues to display while you move to GitHub-backed storage.</p>
                     </details>
                     <details class="faq-item">
                         <summary>Will this work on GitHub Pages?</summary>
-                        <p>Yes. The site is static HTML, CSS and JavaScript and does not require a server, database or build step. Upload the three files to your repository and enable GitHub Pages.</p>
+                        <p>Yes. The site remains static HTML, CSS and JavaScript. GitHub Actions updates <code>data.json</code> when you submit the pre-filled Project Hub sync issue, so no GitHub token is exposed in the browser.</p>
                     </details>
                     <details class="faq-item">
                         <summary>Can I still add, edit and delete projects?</summary>
-                        <p>Yes. The existing project configuration flow is preserved. Add a project from the floating action button, or use Edit and Delete on an existing card.</p>
+                        <p>Yes. Type the private command <code>addproject</code> anywhere outside a form field to open the glass Add Project modal. Edit and Delete continue to work from each project card and sync their changes through GitHub Actions.</p>
                     </details>
                     <details class="faq-item">
                         <summary>Does the theme preference persist?</summary>
@@ -168,7 +168,7 @@
                         <span class="brand-mark" aria-hidden="true">P</span>
                         <span class="brand-text">Project<span>Hub</span></span>
                     </a>
-                    <p class="footer-copy">A lightweight, local-first project archive designed for static hosting.</p>
+                    <p class="footer-copy">A lightweight project archive with GitHub-backed persistence and static hosting.</p>
                 </div>
                 <div class="footer-links">
                     <a href="#projects">Archive</a>
