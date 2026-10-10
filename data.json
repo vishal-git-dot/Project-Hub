@@ -15,7 +15,15 @@
       "link": "https://vishal-git-dot.github.io/frontend-templates/matchday-jersey-store/matchday-jersey-store.html",
       "desc": "MatchDay is a self-contained .html storefront template for jersey and fan-gear shops. There's no framework, no build step, and no backend — open the file in a browser and it works. Every team, product, banner, and price lives in one editable config block at the top of the file, so a store owner can re-skin the entire shop without touching markup.",
       "category": "Web"
+    },
+    {
+      "id": 1791632527483,
+      "title": "nova-kit-template",
+      "img": "assets/nova-kit-template.png",
+      "link": "https://nova-kit-template.netlify.app/",
+      "desc": "A fast, opinionated front-end template for creators, indie makers, and solo brands who want a link-sharing + content monetization page that doesn't look like every other Linktree clone.",
+      "category": "Web"
     }
   ],
-  "lastUpdated": "2026-10-10T11:39:01.775650+00:00"
+  "lastUpdated": "2026-10-10T11:42:23.291733+00:00"
 }
