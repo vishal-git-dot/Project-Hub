@@ -23,7 +23,15 @@
       "link": "https://nova-kit-template.netlify.app/",
       "desc": "A fast, opinionated front-end template for creators, indie makers, and solo brands who want a link-sharing + content monetization page that doesn't look like every other Linktree clone.",
       "category": "Web"
+    },
+    {
+      "id": 1791722280582,
+      "title": "instagram-store-template",
+      "img": "assets/instagram-store-template.png",
+      "link": "https://vishal-git-dot.github.io/frontend-templates/instagram-store-template/instagram-store-template.html",
+      "desc": "A fast, mobile-first storefront template built for sellers who run their shop the way they run an Instagram page — clean grid, tap a product, message to order. No backend, no build tools, no framework. One HTML file, ready to host anywhere.",
+      "category": "Web"
     }
   ],
-  "lastUpdated": "2026-10-10T11:42:23.291733+00:00"
+  "lastUpdated": "2026-10-11T12:38:15.041488+00:00"
 }
