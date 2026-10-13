@@ -17,6 +17,7 @@ const SYNC_MARKER = '<!-- project-hub-sync:v1 -->';
 
 let projects = [];
 let lastFocusedElement = null;
+let manageMode = false;
 
 const grid = document.getElementById('project-grid');
 const modal = document.getElementById('modal');
@@ -221,6 +222,7 @@ function render() {
 
             const actions = document.createElement('div');
             actions.className = 'card-actions';
+            actions.hidden = !manageMode;
 
             const editBtn = document.createElement('button');
             editBtn.className = 'btn-ghost btn-small';
@@ -333,6 +335,11 @@ function closeDetail() {
 
 // 4. CRUD logic — data shape and localStorage key remain unchanged.
 window.editProj = (id) => {
+    if (!manageMode) {
+        showToast('Type the management command to enable project controls.', 'error');
+        return;
+    }
+
     const p = projects.find(x => x.id === id);
     if (!p) {
         showToast('Project not found.', 'error');
@@ -428,6 +435,11 @@ function openGitHubSyncIssue(project, operation = 'add') {
 }
 
 window.deleteProj = (id) => {
+    if (!manageMode) {
+        showToast('Type the management command to enable project controls.', 'error');
+        return;
+    }
+
     const project = projects.find(p => p.id === id);
     if (!project) return;
 
@@ -457,10 +469,23 @@ function closeModal() {
     clearFormError();
 }
 
-// Hidden project-creation command. Change this word if you want a different secret shortcut.
-const SECRET_COMMAND = 'addproject';
+// Hidden commands are stored as SHA-256 hashes, not as plain-text words.
+// Current commands: add-project shortcut and owner-controls toggle.
+// Note: client-side hashes are obfuscation, not real authentication.
+const ADD_PROJECT_COMMAND_HASH = 'd06dbfa875f1515cf34d6473f6ae19f4a9c8d5c22638d69e59a664b5c81bf7db';
+const MANAGE_PROJECTS_COMMAND_HASH = '8953160c684da6e9fa99c515eaf1b40af89bb292026c40371880a451f4379258';
+const MAX_COMMAND_LENGTH = 14;
 let commandBuffer = '';
 let commandTimer = null;
+
+async function sha256(text) {
+    if (!window.crypto?.subtle) throw new Error('SHA-256 is unavailable in this browser context.');
+    const bytes = new TextEncoder().encode(text);
+    const digest = await window.crypto.subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(digest))
+        .map(byte => byte.toString(16).padStart(2, '0'))
+        .join('');
+}
 
 function openAddProjectModal() {
     form.reset();
@@ -468,6 +493,29 @@ function openAddProjectModal() {
     document.getElementById('modal-title').textContent = 'Add a project';
     clearFormError();
     openModal();
+}
+
+async function checkHiddenCommand(command) {
+    try {
+        const hash = await sha256(command);
+        // Ignore stale async checks if the visitor has continued typing.
+        if (commandBuffer !== command) return;
+
+        if (hash === ADD_PROJECT_COMMAND_HASH) {
+            commandBuffer = '';
+            clearTimeout(commandTimer);
+            openAddProjectModal();
+        } else if (hash === MANAGE_PROJECTS_COMMAND_HASH) {
+            commandBuffer = '';
+            clearTimeout(commandTimer);
+            manageMode = !manageMode;
+            render();
+            showToast(manageMode ? 'Project management controls enabled.' : 'Project management controls hidden.', 'success');
+        }
+    } catch (error) {
+        console.warn('Could not verify hidden command.', error);
+        showToast('Hidden commands are unavailable in this browser context.', 'error');
+    }
 }
 
 document.addEventListener('keydown', event => {
@@ -478,17 +526,16 @@ document.addEventListener('keydown', event => {
     if (event.key.length !== 1) return;
 
     commandBuffer += event.key.toLowerCase();
-    if (commandBuffer.length > SECRET_COMMAND.length) {
-        commandBuffer = commandBuffer.slice(-SECRET_COMMAND.length);
+    if (commandBuffer.length > MAX_COMMAND_LENGTH) {
+        commandBuffer = commandBuffer.slice(-MAX_COMMAND_LENGTH);
     }
 
     clearTimeout(commandTimer);
-    commandTimer = setTimeout(() => { commandBuffer = ''; }, 1400);
+    commandTimer = setTimeout(() => { commandBuffer = ''; }, 1800);
 
-    if (commandBuffer === SECRET_COMMAND) {
-        commandBuffer = '';
-        clearTimeout(commandTimer);
-        openAddProjectModal();
+    // Only hash inputs of the known command lengths; the words themselves are not stored here.
+    if (commandBuffer.length === 10 || commandBuffer.length === 14) {
+        void checkHiddenCommand(commandBuffer);
     }
 });
 
