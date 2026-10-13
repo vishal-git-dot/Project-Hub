@@ -690,6 +690,11 @@ kbd {
     margin-top: 20px;
 }
 
+/* Keep owner controls fully hidden until the management command is entered. */
+.card-actions[hidden] {
+    display: none !important;
+}
+
 .btn-small {
     min-height: 35px !important;
     padding: 0 12px !important;
