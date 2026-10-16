@@ -31,7 +31,15 @@
       "link": "https://vishal-git-dot.github.io/frontend-templates/instagram-store-template/instagram-store-template.html",
       "desc": "A fast, mobile-first storefront template built for sellers who run their shop the way they run an Instagram page — clean grid, tap a product, message to order. No backend, no build tools, no framework. One HTML file, ready to host anywhere.",
       "category": "Web"
+    },
+    {
+      "id": 1792142057630,
+      "title": "colormaster",
+      "img": "assets/ColorMaster.png",
+      "link": "https://vishal-git-dot.github.io/ColorMaster/ColorMaster/index.html",
+      "desc": "An interactive web app for learning and testing color recognition skills through quizzes and visual challenges.",
+      "category": "Web"
     }
   ],
-  "lastUpdated": "2026-10-11T12:38:15.041488+00:00"
+  "lastUpdated": "2026-10-16T09:14:34.580914+00:00"
 }
