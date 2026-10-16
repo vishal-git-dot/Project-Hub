@@ -47,7 +47,15 @@
       "link": "https://vishal-git-dot.github.io/flag-master/Flag-Master/flag_master.html",
       "desc": "Flag Master is an interactive web-based quiz game that helps users learn and test their knowledge of world flags.",
       "category": "Web"
+    },
+    {
+      "id": 1792142317939,
+      "title": "QRify",
+      "img": "assets/QRify.png",
+      "link": "https://qrmagicstudio.netlify.app/",
+      "desc": "Transform any link into a beautiful, customizable QR code with modern templates, custom shapes, background styles, logo overlays, and instant multi-format export.",
+      "category": "Web"
     }
   ],
-  "lastUpdated": "2026-10-16T09:16:12.640055+00:00"
+  "lastUpdated": "2026-10-16T09:18:54.308366+00:00"
 }
