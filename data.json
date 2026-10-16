@@ -39,7 +39,15 @@
       "link": "https://vishal-git-dot.github.io/ColorMaster/ColorMaster/index.html",
       "desc": "An interactive web app for learning and testing color recognition skills through quizzes and visual challenges.",
       "category": "Web"
+    },
+    {
+      "id": 1792142158182,
+      "title": "flag-master",
+      "img": "assets/flag_master_preview.png",
+      "link": "https://vishal-git-dot.github.io/flag-master/Flag-Master/flag_master.html",
+      "desc": "Flag Master is an interactive web-based quiz game that helps users learn and test their knowledge of world flags.",
+      "category": "Web"
     }
   ],
-  "lastUpdated": "2026-10-16T09:14:34.580914+00:00"
+  "lastUpdated": "2026-10-16T09:16:12.640055+00:00"
 }
